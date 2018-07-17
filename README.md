@@ -1,1 +1,1 @@
-# Parser to return subject line of an email archive
+# Parser to return subject lines of an email archive
