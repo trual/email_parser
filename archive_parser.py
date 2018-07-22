@@ -21,29 +21,24 @@ def main():
             from_addr = ""
             subject = ""
             date = ""
+            line_count = 0
             for line in file_obj:
                 #From: Suncoast Hotel & Casino - Las Vegas <suncoast@boydgaming.net>
                 if "From:" in line:
-                    #print (line)
                     from_addr = parse_from(line)
                 #Subject: See What's Happening with our Table Games!
                 elif "Subject:" in line:
-                    #print(line)
                     subject = parse_subject(line)
                 #Date: Fri, 01 Apr 2011 10:36:26 -0700
                 elif "Date:" in line:
-                    #print(line)
                     date = parse_date(line)
-                #MIME-Version: 1.0
                 #todo find a better anchor
-                elif "Content-Type:" in line:
+                elif (from_addr != "" and subject != "" and date != "") or line_count > 50:
                     #todo pipe out here
                     print("{}|{}|{}|{}".format(name, from_addr, subject, date))
                     meta_data.write("{}|{}|{}|{}\n".format(name, from_addr, subject, date))
                     break
-
-
-
+                line_count+=1
 
             # content=f.read()
             # print "%s has %d newlines" %(member, content.count("\n"))

@@ -10,9 +10,10 @@ class parser_function_test(unittest.TestCase):
         Date: Fri, 01 Apr 2011 05:52:55 PDT +0000
         Date: Fri, 01 Apr 2011 05:52:55 PDT +0000
         Date: Fri, 01 Apr 2011 05:52:55 PDT
-        Date: 03/14/11
+        Date: Fri, 01 Apr 2011 05:52:55 PDT +0000 (UTC)
+        Date: Fri, 31 Apr 2011 05:52:55 PDT +0000
         """
-        exp_date = "01 Apr 2011"
+        exp_date = "04/01/2011"
         to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT -1000"
         self.assertEqual(exp_date, parse_date(to_parse),
                 'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
@@ -26,6 +27,37 @@ class parser_function_test(unittest.TestCase):
                 'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
 
         to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT"
+        self.assertEqual(exp_date, parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
+
+    def test_parse_date_numeric_dates(self):
+        """
+        Date: 03/10/1990
+        Date: 03/10/1990 UTC
+        Date: 03/10/90
+        Date: 3/10/1990
+        Date: 03/14/11
+        Date: 03/7/2011
+        """
+        exp_date = "03/10/1990"
+        to_parse = "Date: 03/10/1990"
+        self.assertEqual(exp_date, parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
+        to_parse = "Date: 03/10/1990 UTC"
+        self.assertEqual(exp_date, parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
+        to_parse = "Date: 03/10/90"
+        self.assertEqual(exp_date, parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
+        to_parse = "Date: 3/10/1990"
+        self.assertEqual(exp_date, parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
+        exp_date = "03/14/2011"
+        to_parse = "Date: 03/14/11"
+        self.assertEqual(exp_date, parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
+        exp_date = "03/07/2011"
+        to_parse = "Date: 03/7/2011"
         self.assertEqual(exp_date, parse_date(to_parse),
                 'exp {} | found {}'.format(exp_date, parse_date(to_parse)))
 
