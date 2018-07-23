@@ -1,52 +1,28 @@
 #!/usr/bin/python
-import tarfile
-import sys
+from parser import Parser
+import argparse
 
-from parser import *
 
 
 def main():
-    with open('archive_metadata.txt', 'w') as meta_data:
-        print(tarfile.is_tarfile("sampleEmails4.tar"))
-        tar = tarfile.open("sampleEmails4.tar")
+    ### take in args for out/inputarchive
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("-i", "--input_file",
+                    help="tar file to read")
+    arg_parser.add_argument("-o", "--output_file",
+                    help="output file to write")
+    args = arg_parser.parse_args()
+    if args.input_file:
+        input_file = args.input_file
+    else:
+        input_file = "sampleEmails4.tar"
+    if args.output_file:
+        output_file = args.output_file
+    else:
+        output_file = "archive_metadata.txt"
 
-        ## this below needs to be a in a function
-        for member in tar.getmembers():
-            #print(member.type)
-            #print(member.name)
-            name = parse_name(member.name)
-            if member.isdir():
-                continue
-            file_obj=tar.extractfile(member)
-            from_addr = ""
-            subject = ""
-            date = ""
-            line_count = 0
-            for line in file_obj:
-                #From: Suncoast Hotel & Casino - Las Vegas <suncoast@boydgaming.net>
-                if "From:" in line:
-                    from_addr = parse_from(line)
-                #Subject: See What's Happening with our Table Games!
-                elif "Subject:" in line:
-                    subject = parse_subject(line)
-                #Date: Fri, 01 Apr 2011 10:36:26 -0700
-                elif "Date:" in line:
-                    date = parse_date(line)
-                #todo find a better anchor
-                elif (from_addr != "" and subject != "" and date != "") or line_count > 50:
-                    #todo pipe out here
-                    print("{}|{}|{}|{}".format(name, from_addr, subject, date))
-                    meta_data.write("{}|{}|{}|{}\n".format(name, from_addr, subject, date))
-                    break
-                line_count+=1
-
-            # content=f.read()
-            # print "%s has %d newlines" %(member, content.count("\n"))
-            # print "%s has %d spaces" % (member,content.count(" "))
-            # print "%s has %d characters" % (member, len(content))
-
-        tar.close()
-
+    p = Parser()
+    p.parse_archive(input_file, output_file)
 
 
 if __name__ == '__main__':
