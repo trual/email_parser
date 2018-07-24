@@ -11,21 +11,21 @@ class parser_function_test(unittest.TestCase):
         """
         Date: Fri, 01 Apr 2011 05:52:55 PDT -0000
         Date: Fri, 01 Apr 2011 05:52:55 PDT +0000
-        Date: Fri, 01 Apr 2011 05:52:55 PDT +0000
-        Date: Fri, 01 Apr 2011 05:52:55 PDT
         Date: Fri, 01 Apr 2011 05:52:55 PDT +0000 (UTC)
+        Date: Fri, 01 Apr 2011 05:52:55 EST
+        Date: Fri, 01 Apr 2011 05:52:55 EST -0400
         Date: Fri, 31 Apr 2011 05:52:55 PDT +0000
         """
         exp_date = "04/01/2011"
-        to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT -1000"
+        to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT -0100"
         self.assertEqual(exp_date, self.psr.parse_date(to_parse),
                 'exp {} | found {}'.format(exp_date, self.psr.parse_date(to_parse)))
 
-        to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT +2000"
+        to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT +0200"
         self.assertEqual(exp_date, self.psr.parse_date(to_parse),
                 'exp {} | found {}'.format(exp_date, self.psr.parse_date(to_parse)))
 
-        to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT -4000 "
+        to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT -0400 "
         self.assertEqual(exp_date, self.psr.parse_date(to_parse),
                 'exp {} | found {}'.format(exp_date, self.psr.parse_date(to_parse)))
 
