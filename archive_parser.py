@@ -2,7 +2,8 @@
 from parser import Parser
 import argparse
 
-
+DEFAULT_ARCHIVE = "sampleEmails4.tar"
+DEFAULT_OUTPUT = "archive_metadata.txt"
 
 def main():
     ### take in args for out/inputarchive
@@ -15,11 +16,11 @@ def main():
     if args.input_file:
         input_file = args.input_file
     else:
-        input_file = "sampleEmails4.tar"
+        input_file = DEFAULT_ARCHIVE
     if args.output_file:
         output_file = args.output_file
     else:
-        output_file = "archive_metadata.txt"
+        output_file = DEFAULT_OUTPUT
 
     p = Parser()
     p.parse_archive(input_file, output_file)
