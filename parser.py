@@ -15,81 +15,53 @@ class Parser():
         """
         with open(output_file, 'w') as meta_data:
             if not tarfile.is_tarfile(input_file):
+#TODO HANDLE NON TAR FILE WITH YOUR FUNCTION <3
                 print("please select a tarfile")
                 return
             tar = tarfile.open(input_file)
 
             for member in tar.getmembers():
-
-                name = self.parse_name(member.name)
                 if member.isdir():
                     continue
-                file_obj=tar.extractfile(member)
 
-                #Method goes here and pass fileobj into
-                from_addr = ""
-                subject = ""
-                date = ""
-                boundary = ""
-                for line in file_obj:
-                    #From: Suncoast Hotel & Casino - Las Vegas <suncoast@boydgaming.net>
-                    #todo add starts with instead of in
-                    if "From:" in line:
-                        from_addr = self.parse_from(line)
-                    #Subject: See What's Happening with our Table Games!
-                    elif "Subject:" in line:
-                        subject = self.parse_subject(line)
-                    #Date: Fri, 01 Apr 2011 10:36:26 -0700
-                    elif "Date:" in line:
-                        date = self.parse_date(line)
-                    elif "boundary=" in line:
-                        boundary = self.parse_boundary(line)
-                    #todo find a better anchor, boundary, use the boundary value to find the endof the header then hit the value of boundary
-                    elif (self.check_write_conditions(line, boundary)):
-                        #todo pipe out here
-                        print("{}|{}|{}|{}".format(name, from_addr, subject, date))
-                        #wtf does this do?
-                        meta_data.write("{}|{}|{}|{}\n".format(name, from_addr, subject, date))
-                        break
+                file_obj=tar.extractfile(member)
+                data_list = self.parse_msg_file(file_obj)
+                print('|'.join(data_list))
+                meta_data.write('|'.join(data_list) + "\n")
             tar.close()
 
-    @staticmethod
-    def check_write_conditions(line, boundary):
+    def parse_msg_file(self, file_obj):
         """
-        check the line to see if it matches any return conditions
-        :param line string: line in file
-        :param boundary: variable which marks the end of multipart messages
-        :return bool: true if write to the file is possible
+        Takes and a file object and returns a list of the desired metadata
+        :param fileobj: python file object of msg file
+        :return list: List of from address, subject line, date
         """
-        if line.startswith('<html'):
-            return True
-        elif boundary!= "" and line.startswith(boundary):
-            return True
-        elif line.startswith('<!--HEADER-->'):
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def parse_boundary(line):
-        """
-        The boundary condition is used in MIME format to mark the end of Multipart
-        message
-        :param line string: line of msg files
-        :return the boundary variable
-        """
-        search = re.search(r'\"(.+)\"', line)
-        if search:
-            return "--" + search.group(1)
-        return ""
-
+        name = self.parse_name(file_obj.name)
+        from_addr = ""
+        subject = ""
+        date = ""
+        for line in file_obj:
+            #From: Suncoast Hotel & Casino - Las Vegas <suncoast@boydgaming.net>
+            if line.startswith("From:"):
+                from_addr = self.parse_from(line)
+            #Subject: See What's Happening with our Table Games!
+            elif line.startswith("Subject:"):
+                subject = self.parse_subject(line)
+            #Date: Fri, 01 Apr 2011 10:36:26 -0700
+            elif line.startswith("Date:"):
+                date = self.parse_date(line)
+            #check if end of the header
+            elif (line.startswith('\n')):
+                return [name, from_addr, subject, date]
+#Make all the parse methods private
+#Get rid of static decorator on methods
     @staticmethod
     def parse_from(line):
         """
-        Parse string for from address in a line given the msg Information
+        Parse string for 'from' address in a line given the msg Information
         return string: email address or empty if not found
         """
-        if '<' in line:
+        if '<' and '>' in line:
             search = re.search(r'<(.+)>', line)
         else:
             search = re.search(r': (.+)', line)
@@ -133,8 +105,6 @@ class Parser():
         :param line string: line to be parsed
         :return string: name of file
         """
-        if '/' not in line:
-            return line
         search = re.search(r'\/(\w+.\w+$)', line)
         if search:
             return search.group(1)
@@ -157,7 +127,7 @@ class Parser():
         if len(day) < 2:
             day = day.zfill(2)
         if len(year) < 4:
-            #check time off current time
+#Find out when first email was sent. And tell yacob
             if int(year) > 85:
                 #add 19
                 year = '19' + year
@@ -172,7 +142,7 @@ class Parser():
         :param line string: date line with long formatted date
         :retirn string: date converted to mm/dd/yyyy format
         """
-        search = re.search(r':\D+(\d{1,2}) (\w{3}) (\d{4})', line)
+        search = re.search(r':\D+(\d{1,2}) (\w{3,4}) (\d{4})', line)
         if search:
             day = search.group(1)
             month = search.group(2)
@@ -182,6 +152,7 @@ class Parser():
             month = self.month_dict[month]
             return '{}/{}/{}'.format(month, day, year)
 
+#Make this private probably. Unless you want to expose it on the parse class
     month_dict = {'Jan': '01',
                   'Feb': '02',
                   'Mar': '03',

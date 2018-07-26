@@ -15,6 +15,9 @@ class parser_function_test(unittest.TestCase):
         Date: Fri, 01 Apr 2011 05:52:55 EST
         Date: Fri, 01 Apr 2011 05:52:55 EST -0400
         Date: Fri, 31 Apr 2011 05:52:55 PDT +0000
+        Date: Fri, 31 Sept 2011 05:52:55 PDT +0000
+        Date: Fri, 7 June 2011 05:52:55 PDT +0000
+
         """
         exp_date = "04/01/2011"
         to_parse = "Date: Fri, 01 Apr 2011 05:52:55 PDT -0100"
@@ -33,6 +36,15 @@ class parser_function_test(unittest.TestCase):
         self.assertEqual(exp_date, self.psr.parse_date(to_parse),
                 'exp {} | found {}'.format(exp_date, self.psr.parse_date(to_parse)))
 
+        exp_date = "09/31/2011"
+        to_parse = "Date: Fri, 31 Sept 2011 05:52:55 PDT +0000"
+        self.assertEqual(exp_date, self.psr.parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, self.psr.parse_date(to_parse)))
+
+        exp_date = "06/07/2011"
+        to_parse = "Date: Fri, 7 June 2011 05:52:55 PDT +0000"
+        self.assertEqual(exp_date, self.psr.parse_date(to_parse),
+                'exp {} | found {}'.format(exp_date, self.psr.parse_date(to_parse)))
     def test_parse_date_numeric_dates(self):
         """
         Date: 03/10/1990
