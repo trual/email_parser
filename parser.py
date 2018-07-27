@@ -25,7 +25,6 @@ class Parser():
 
                 file_obj=tar.extractfile(member)
                 data_list = self.parse_msg_file(file_obj)
-                print('|'.join(data_list))
                 meta_data.write('|'.join(data_list) + "\n")
             tar.close()
 
